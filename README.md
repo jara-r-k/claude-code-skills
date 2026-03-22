@@ -23,6 +23,7 @@ Agents are specialised subprocesses that Claude Code spawns for focused tasks.
 |-------|-------------|-------|
 | **[code-reviewer](agents/code-reviewer.md)** | Analyses code changes for quality, security, performance, and maintainability | Sonnet |
 | **[project-setup](agents/project-setup.md)** | Scaffolds CLAUDE.md and .claude/ configuration for new projects | Sonnet |
+| **[python-test-runner](agents/python-test-runner.md)** | Runs and analyses pytest suites — failure diagnosis, coverage reports, and flaky test detection | Sonnet |
 
 ### Examples
 
