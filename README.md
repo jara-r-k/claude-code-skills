@@ -104,6 +104,19 @@ Every skill in this repo passes the [skill-compliance-checklist](skills/skill-co
 /skill-compliance-checklist --all
 ```
 
+## CI/CD Validation
+
+This repo includes a [GitHub Actions workflow](.github/workflows/validate-skills.yml) that automatically validates all skills and agents on push and PR. It checks:
+
+- YAML frontmatter presence and structure
+- Kebab-case naming
+- Description length (< 1024 chars) and format
+- No XML angle brackets in descriptions
+- Word count (< 5,000 words)
+- Error handling and examples sections
+
+Fork this repo and the validation runs automatically on your changes.
+
 ## Licence
 
 [MIT](LICENSE)

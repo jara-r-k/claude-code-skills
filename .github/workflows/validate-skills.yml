@@ -1,0 +1,112 @@
+name: Validate Skills
+
+on:
+  push:
+    paths:
+      - 'skills/**'
+      - 'agents/**'
+      - 'examples/**'
+  pull_request:
+    paths:
+      - 'skills/**'
+      - 'agents/**'
+      - 'examples/**'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check SKILL.md structure
+        run: |
+          errors=0
+
+          # Validate all SKILL.md files
+          for skill in skills/*/SKILL.md examples/*/SKILL.md; do
+            [ -f "$skill" ] || continue
+            echo "Checking $skill..."
+
+            # Check YAML frontmatter exists
+            if ! head -1 "$skill" | grep -q '^---$'; then
+              echo "  FAIL: Missing YAML frontmatter delimiter"
+              errors=$((errors + 1))
+            fi
+
+            # Check name field exists and is kebab-case
+            name=$(grep '^name:' "$skill" | head -1 | sed 's/name: *//')
+            if [ -z "$name" ]; then
+              echo "  FAIL: Missing name field"
+              errors=$((errors + 1))
+            elif echo "$name" | grep -qE '[A-Z_ ]'; then
+              echo "  FAIL: Name '$name' is not kebab-case"
+              errors=$((errors + 1))
+            fi
+
+            # Check description field exists
+            if ! grep -q '^description:' "$skill"; then
+              echo "  FAIL: Missing description field"
+              errors=$((errors + 1))
+            fi
+
+            # Check description length (under 1024 chars)
+            desc=$(grep '^description:' "$skill" | head -1 | sed 's/description: *//')
+            desc_len=${#desc}
+            if [ "$desc_len" -gt 1024 ]; then
+              echo "  FAIL: Description is $desc_len chars (max 1024)"
+              errors=$((errors + 1))
+            fi
+
+            # Check no XML angle brackets in description
+            if echo "$desc" | grep -qE '[<>]'; then
+              echo "  FAIL: Description contains XML angle brackets"
+              errors=$((errors + 1))
+            fi
+
+            # Check word count (under 5000 words)
+            word_count=$(wc -w < "$skill" | tr -d ' ')
+            if [ "$word_count" -gt 5000 ]; then
+              echo "  FAIL: Body is $word_count words (max 5000)"
+              errors=$((errors + 1))
+            fi
+
+            # Check for error handling section
+            if ! grep -qi '## error\|## troubleshoot' "$skill"; then
+              echo "  WARN: No error handling section found"
+            fi
+
+            # Check for examples section
+            if ! grep -qi '## example' "$skill"; then
+              echo "  WARN: No examples section found"
+            fi
+
+            echo "  OK ($word_count words)"
+          done
+
+          # Validate agent files
+          for agent in agents/*.md; do
+            [ -f "$agent" ] || continue
+            echo "Checking $agent..."
+
+            if ! head -1 "$agent" | grep -q '^---$'; then
+              echo "  FAIL: Missing YAML frontmatter delimiter"
+              errors=$((errors + 1))
+            fi
+
+            name=$(grep '^name:' "$agent" | head -1 | sed 's/name: *//')
+            if [ -z "$name" ]; then
+              echo "  FAIL: Missing name field"
+              errors=$((errors + 1))
+            fi
+
+            echo "  OK"
+          done
+
+          if [ "$errors" -gt 0 ]; then
+            echo ""
+            echo "FAILED: $errors error(s) found"
+            exit 1
+          fi
+
+          echo ""
+          echo "All skills and agents passed validation."
