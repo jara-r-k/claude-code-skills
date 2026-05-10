@@ -1,12 +1,22 @@
-__pycache__/
-*.pyc
-.venv/
-venv/
-*.log
-.DS_Store
-.pytest_cache/
-.coverage
-htmlcov/
+# claude-code-skills — TypeScript / Node skills library (MIT, public)
+# Keep SKILL.md and example fixtures visible.
+
+# Node
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+
+# Build artefacts
 dist/
 build/
-*.egg-info/
+
+# Test output
+coverage/
+.nyc_output/
+
+# Logs and OS cruft
+**/*.log
+**/.DS_Store
+
+# Local env
+.env*
