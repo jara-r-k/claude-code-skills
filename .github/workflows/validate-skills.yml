@@ -6,11 +6,13 @@ on:
       - 'skills/**'
       - 'agents/**'
       - 'examples/**'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'skills/**'
       - 'agents/**'
       - 'examples/**'
+      - '.github/workflows/**'
 
 jobs:
   validate:
