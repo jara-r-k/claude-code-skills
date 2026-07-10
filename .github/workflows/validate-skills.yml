@@ -6,11 +6,13 @@ on:
       - 'skills/**'
       - 'agents/**'
       - 'examples/**'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'skills/**'
       - 'agents/**'
       - 'examples/**'
+      - '.github/workflows/**'
 
 jobs:
   validate:
@@ -86,6 +88,8 @@ jobs:
           # Validate agent files
           for agent in agents/*.md; do
             [ -f "$agent" ] || continue
+            # AGENTS.md files are deepinit navigation maps, not agent definitions.
+            [ "$(basename "$agent")" = "AGENTS.md" ] && continue
             echo "Checking $agent..."
 
             if ! head -1 "$agent" | grep -q '^---$'; then
