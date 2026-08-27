@@ -1,6 +1,6 @@
 # Claude Code Skills
 
-> **Root principles**: See ~/projects/CLAUDE.md §1–4 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). They apply here — especially §2 (skills should be minimal, not speculative) and §4 (validate against compliance checklist before publishing).
+> **Root principles**: See /Users/jararokahrknowles/projects/AGENTS.md §1–4 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). They apply here — especially §2 (skills should be minimal, not speculative) and §4 (validate against compliance checklist before publishing).
 
 Public repository of reusable Claude Code skills, agents, and examples.
 
@@ -73,7 +73,7 @@ Agents use YAML frontmatter with `name`, `model` (Sonnet default), and `tools` l
 5. **Missing error handling section** — CI warns but doesn't fail. Include it anyway for compliance.
 6. **Frontmatter delimiter** — Must be exactly `---` on line 1. No leading whitespace.
 7. **Agent files skip word count** — CI only checks frontmatter for agents, not body length. Self-enforce.
-8. **Wiki raw/ safety** — This project is part of the ~/projects/ LLM Wiki. Never write to ~/projects/raw/ — that layer is human-curated and immutable. See ~/projects/CLAUDE.md for the full wiki schema.
+8. **Wiki raw/ safety** — This project is part of the ~/projects/ LLM Wiki. Never write to ~/projects/raw/ — that layer is human-curated and immutable. See /Users/jararokahrknowles/projects/AGENTS.md for the full wiki schema.
 
 ## Compact Instructions
 
