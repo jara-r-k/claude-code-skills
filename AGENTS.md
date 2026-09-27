@@ -25,7 +25,7 @@ Public (MIT) repository of reusable Claude Code skills, agents, and example temp
 | `examples/` | Adaptation templates with placeholders (see `examples/AGENTS.md`) |
 | `scripts/` | `attention-check.sh` — Attention Hub scanner, not used by CI (see `scripts/AGENTS.md`) |
 | `.github/` | GitHub Actions CI (see `.github/AGENTS.md`) |
-| `.claude/` | Gitignored local config. `.claude/skills/` holds only six `wiki-*` symlinks into a `/sessions/…` sandbox path absent on the host (dangling). Not documented; never write through them |
+| `.claude/` | Optional gitignored local configuration; contents vary by checkout. |
 | `.omc/` | Gitignored oh-my-claudecode session state. Generated — do not edit or document |
 
 ## For AI Agents

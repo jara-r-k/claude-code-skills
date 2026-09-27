@@ -35,7 +35,7 @@ Reusable Claude Code subagent definitions. Each `.md` file has YAML frontmatter 
 
 - Numbered steps, then `## Rules`; `code-reviewer` and `python-test-runner` also define an `## Output Format` block.
 - `code-reviewer.md` overlaps `skills/github-pr-review/` but uses a different severity scale (Critical/High/Medium/Low/Nit vs Critical/Suggestion/Nit) and omits empty severity sections. Align both deliberately if changing either.
-- `project-setup.md` must read an existing `CLAUDE.md` before touching it and stay idempotent.
+- `project-setup.md` must read an existing `CLAUDE.md` before touching it and stay idempotent. It must change configuration only, never modify source code, install packages, or run deployment commands.
 
 ## Dependencies
 
