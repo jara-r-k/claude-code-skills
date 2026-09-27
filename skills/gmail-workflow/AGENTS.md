@@ -1,43 +1,43 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # skills/gmail-workflow/
 
 ## Purpose
 
-Email management skill for the Gmail MCP server. Covers four workflows: drafting outreach emails (always saved as drafts, never sent directly), triaging the inbox with urgency categorisation, searching messages using Gmail query syntax, and managing existing drafts. Coordinates seven Gmail MCP tools.
+Companion skill for the Gmail MCP server with four workflows: drafting (always saved as drafts, never sent), inbox triage into four urgency groups, search with Gmail operators, and draft listing/revision. Read, search, and draft only — it never sends, modifies, or deletes mail.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `SKILL.md` | Full skill definition — MCP tool catalogue, four workflow procedures, error handling table (MCP disconnected, rate limits, no results, auth failure), three worked examples, and critical rules |
+| `SKILL.md` | Seven-tool Gmail MCP catalogue, four workflows, error table (MCP disconnected, rate limits, no results, auth failure), three examples, `## Important` rules. v1.0.0, `mcp-server: gmail`, ~760 words |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- This skill requires the Gmail MCP server to be connected (`mcp-server: gmail` in frontmatter).
-- Current version: `1.0.0`. Bump on any change to the workflow procedures or MCP tool list.
-- Emails must never be sent directly — always use `gmail_create_draft` and let the user send manually. This is a hard constraint.
-- Call `gmail_get_profile` at the start of a session to confirm the correct account is active.
+- Hard rule: never send email. Every compose or reply goes through `gmail_create_draft`, and the full draft (To, Subject, Body) is shown to the user.
+- Call `gmail_get_profile` at session start to confirm the active account.
+- Description/body mismatch: the description promises "manage newsletter lists" and triggers on 'manage newsletter', but no newsletter workflow exists. Add one or drop it from the description (and bump the version).
+- "Managing Drafts" offers to update or discard drafts, but no update or delete tool is catalogued: updating via `gmail_create_draft` leaves the old draft in place, and discarding is impossible with these tools (and conflicts with "do not modify or delete"). Tell the user rather than implying it happened.
+- `gmail_list_labels` is catalogued but unused by any workflow.
 
 ### Testing Requirements
 
-- Validate SKILL.md with `/skill-compliance-checklist` before committing changes.
-- Manual test: verify the draft workflow saves to drafts without sending, the triage workflow categorises messages into the four defined groups, and the search workflow constructs valid Gmail query syntax.
+- Run the local CI command from the root `AGENTS.md` and `/skill-compliance-checklist skills/gmail-workflow/SKILL.md`.
+- Manual, against a live Gmail MCP: drafts are saved and never sent, triage yields the four groups, searches build valid operator queries.
 
 ### Common Patterns
 
-- Gmail search operators used: `from:`, `to:`, `subject:`, `has:attachment`, `after:`, `before:`, `is:unread`.
-- Inbox triage categories: Urgent, Action required, Informational, Low priority.
-- When updating a draft, use `gmail_create_draft` with the revised content (no update-in-place tool exists).
-- Do not log, store, or summarise email content beyond the current session — privacy constraint.
+- Search operators: `from:`, `to:`, `subject:`, `has:attachment`, `after:`, `before:`, `is:unread`.
+- Triage groups: Urgent, Action required, Informational, Low priority.
+- Privacy: do not log, store, or summarise email content beyond the current session.
 
 ## Dependencies
 
 ### External
 
-- Gmail MCP server (requires OAuth token configuration)
+- Gmail MCP server with valid OAuth credentials (tool names follow the `gmail_*` convention above)
 
 <!-- MANUAL: -->

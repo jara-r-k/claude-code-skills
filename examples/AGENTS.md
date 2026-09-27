@@ -1,11 +1,11 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # examples/
 
 ## Purpose
 
-Adaptation templates for common patterns. Each example provides a working SKILL.md plus a `references/` directory with customisation guides. Examples are designed to be copied into a project and edited — they contain placeholders (e.g., `PROJECT_PATH`, `APP_URL`) that must be replaced before use.
+Adaptation templates, not ready-to-use skills. Each example is a `SKILL.md` with placeholders (e.g. `PROJECT_PATH`, `APP_URL`) plus a `references/` directory holding the supporting template and customisation guide. Users copy an example into their own skills directory and fill in the placeholders there.
 
 ## Subdirectories
 
@@ -17,20 +17,27 @@ Adaptation templates for common patterns. Each example provides a working SKILL.
 
 ### Working In This Directory
 
-- Examples are templates, not production skills. They intentionally contain placeholders.
-- When adding a new example, follow the same structure: `{name}/SKILL.md` + `{name}/references/` with at minimum a customisation guide.
-- The SKILL.md in an example should pass compliance checks, but placeholder values are acceptable.
-- Never fill in project-specific paths, URLs, or IDs in the template files — they must remain generic.
+- Keep placeholders generic — never fill in project-specific paths, URLs, or IDs here.
+- A new example needs `{name}/SKILL.md` plus `{name}/references/` with at least a customisation guide.
+- CI validates `examples/*/SKILL.md` with the same hard checks as skills (frontmatter, kebab-case `name`, description length/angle brackets, word count). `references/` files are not checked.
+- An example's frontmatter `name` may differ from its folder (`persona-audit` lives in `persona-audit-pattern/`); the install target directory should match `name`.
+- Add new examples to the README Examples table.
 
 ### Testing Requirements
 
-- Verify that SKILL.md frontmatter is valid YAML and passes the structural checks in `skill-compliance-checklist`.
-- Verify the `references/` directory contains at minimum one customisation guide file.
+- Run the local CI command from the root `AGENTS.md`, then `/skill-compliance-checklist examples/{name}/SKILL.md` (placeholder values are acceptable).
+- Confirm `references/` contains the customisation guide the SKILL.md points to.
 
 ### Common Patterns
 
-- Customisation guides in `references/` use numbered steps to walk through which placeholders to replace.
-- Example SKILL.md files use `user-invocable: true` since they are intended for direct invocation after customisation.
-- Agent templates in `references/` provide a full YAML + body block that can be dropped into a project's `.claude/agents/` directory.
+- Customisation guides are numbered steps listing what to replace.
+- Example SKILL.md files set `user-invocable: true` — they are invoked directly once customised.
+- Agent templates in `references/` give the YAML frontmatter and the body as separate fenced blocks; join them (without the fences) to produce the `.claude/agents/*.md` file.
+
+## Dependencies
+
+### Internal
+
+- `skills/skill-compliance-checklist/` — compliance audit for example SKILL.md files
 
 <!-- MANUAL: -->
