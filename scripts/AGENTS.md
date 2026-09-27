@@ -23,6 +23,7 @@ Holds `attention-check.sh`, this repo's per-project detector for the `~/projects
 - The runner loop reports any detector returning non-zero as a crash (score 40). End every detector on a successful command or `return 0` — a bare `return` after a failed test (e.g. `detect_stale_skills` when `skills/` is missing) counts as a crash.
 - `emit` passes `title` and `body` through `json_escape`, but not `id`. Branch or skill names containing `"` or `\` would yield invalid JSON — sanitise any new `id` input.
 - `PROJECT_ROOT` is derived from the script's own location, so any cwd works.
+- `PROJECT` is hard-coded at the top of the script and embedded in every signal — update it if the project is renamed.
 
 ### Testing Requirements
 
