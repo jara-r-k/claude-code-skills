@@ -1,48 +1,51 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # agents/
 
 ## Purpose
 
-Reusable agent definition files. Each `.md` file defines a specialised Claude Code subagent with YAML frontmatter (`name`, `model`, `tools`) and a methodology body. Agents are spawned by Claude Code for focused, single-responsibility tasks and are distinct from skills — they execute work rather than guide behaviour.
+Reusable Claude Code subagent definitions. Each `.md` file has YAML frontmatter (`name`, `description`, `license`, `model`, `tools`) and a methodology body. Agents execute focused work when spawned; skills (`../skills/`) guide behaviour when triggered. Users install by copying into `~/.claude/agents/` or `{project}/.claude/agents/`.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `code-reviewer.md` | Analyses code changes for quality, security, performance, and maintainability — produces structured findings by severity |
-| `project-setup.md` | Scaffolds `CLAUDE.md` and `.claude/` configuration for new or uninitialised projects |
-| `python-test-runner.md` | Runs and analyses pytest suites — pass/fail summaries, failure diagnosis, coverage reports, flaky-test detection |
+| `code-reviewer.md` | Reviews diffs for security (OWASP Top 10), quality, performance, maintainability; findings graded Critical/High/Medium/Low/Nit plus Positives and Suggestions. Tools: Read, Glob, Grep, Bash |
+| `project-setup.md` | Explores a new repo, detects the stack from marker files, writes a concise `CLAUDE.md` (< 80 lines) and a `.claude/agents/` + `.claude/commands/` skeleton. Tools: Read, Write, Edit, Bash, Glob, Grep |
+| `python-test-runner.md` | Activates a venv, runs pytest at the requested scope, reports counts, failure root causes, environment issues, flaky tests, coverage. Tools: Read, Glob, Grep, Bash |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- Agent files use YAML frontmatter with at minimum: `name` (kebab-case), `model` (`sonnet` default), `tools` (list).
-- Agent body should contain a clear methodology — step-ordered instructions and an output format section.
-- CI checks frontmatter for agents but does not enforce word count — self-enforce conciseness.
-- Install globally: `cp agents/<file>.md ~/.claude/agents/` or project-locally: `cp agents/<file>.md {project}/.claude/agents/`.
-- Never include deployment commands or destructive operations in an agent body.
+- CI requires only `---` on line 1 and a non-empty `name:`. Match the existing files anyway: `description` (with "Do NOT use for…"), `license: MIT`, `model: sonnet`, minimal `tools` list.
+- CI skips `AGENTS.md` by exact basename (it has no frontmatter). Do not rename it or add any other non-agent `.md` here — CI would fail it.
+- No word limit is enforced for agents; self-enforce concision (current files are 640–710 words).
+- "Read-only" in `code-reviewer` and `python-test-runner` is an instruction, not a tool restriction — both have `Bash`. Keep the prohibitions in the body.
+- Never add deployment or destructive commands to an agent body.
+- New agents go in the README Agents table (the README install snippet currently copies only `code-reviewer` and `project-setup`).
 
 ### Testing Requirements
 
-- No automated tests for agent definitions.
-- Manually verify by spawning the agent in the target context and checking it follows its stated methodology.
-- For `python-test-runner.md`: ensure the venv-activation block runs before pytest invocations.
+- Run the local CI command from the root `AGENTS.md`.
+- No behavioural tests: spawn the agent in a real context and check it follows its steps and output format.
 
 ### Common Patterns
 
-- All three agents default to `model: sonnet`.
-- Tools lists are minimal — only what the agent genuinely needs (reduces surface area).
-- `code-reviewer.md` and `python-test-runner.md` are read-only agents; they must not write or modify files.
-- `project-setup.md` writes only configuration files (CLAUDE.md, .claude/ scaffolding) — never source code.
+- Numbered steps, then `## Rules`; `code-reviewer` and `python-test-runner` also define an `## Output Format` block.
+- `code-reviewer.md` overlaps `skills/github-pr-review/` but uses a different severity scale (Critical/High/Medium/Low/Nit vs Critical/Suggestion/Nit) and omits empty severity sections. Align both deliberately if changing either.
+- `project-setup.md` must read an existing `CLAUDE.md` before touching it and stay idempotent. It must change configuration only, never modify source code, install packages, or run deployment commands.
 
 ## Dependencies
 
+### Internal
+
+- `skills/github-pr-review/` — sibling review methodology (see overlap note)
+
 ### External
 
-- Python + pytest — required by `python-test-runner.md`
-- Git — required by `code-reviewer.md` (git diff, git log)
+- Git — `code-reviewer` (`git diff`, `git log`)
+- Python + pytest; optional pytest-cov, pytest-xdist, pytest-timeout — `python-test-runner`
 
 <!-- MANUAL: -->

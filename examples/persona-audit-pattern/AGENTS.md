@@ -1,50 +1,53 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # examples/persona-audit-pattern/
 
 ## Purpose
 
-Template for a persona-driven UX audit skill. Generates randomised user personas, runs discovery/verification/fix agent teams in parallel phases, and writes a structured audit report. This directory is a starting point — copy it to a project, replace all placeholders (`PROJECT_PATH`, `AGENT_PATH`, `APP_URL`, `FOCUS_AREAS`), and create the project-specific agent from `references/agent-template.md`.
+Template for a persona-driven UX audit skill. The skill hands off to a project-specific audit agent that generates personas and runs discovery, verification, and fix agent teams in sequential phases, then writes a dated report. To use it: copy the directory into a project's skills, replace the placeholders (`PROJECT_PATH`, `AGENT_PATH`, `APP_URL`, `FOCUS_AREAS`), and create the agent from `references/agent-template.md`.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `SKILL.md` | Skill template — configuration placeholders, four-step invocation workflow, error handling, and usage examples |
-| `references/agent-template.md` | Full agent definition template (YAML frontmatter + body) for the project-specific persona audit agent, including four-phase workflow (discovery, verification, fix, report) and focus area table |
+| `SKILL.md` | Skill template (`name: persona-audit`, `user-invocable: true`): configuration placeholders, three-step workflow (locate agent → pass focus argument → expected outputs), error handling, three invocation examples. ~450 words |
+| `references/agent-template.md` | Agent frontmatter + body templates and a six-step customisation guide (see `references/AGENTS.md`) |
 
 ## Subdirectories
 
 | Directory | Purpose |
 |-----------|---------|
-| `references/` | Supporting templates loaded on demand (see `references/AGENTS.md`) |
+| `references/` | Agent template used to create the project agent (see `references/AGENTS.md`) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- This is a template — all placeholder values (`PROJECT_PATH`, `APP_URL`, etc.) must remain generic in this directory. Fill them in only in the project copy.
-- The SKILL.md is `user-invocable: true` and triggers on: 'audit', 'test personas', 'run a UX check', 'QA the app', 'persona audit', 'test the app with fake users'.
-- The agent template spawns up to 3 + 2 + 3 = 8 parallel subagents; expect significant runtime.
-- Focus area selection uses date-based rotation: `focus_index = (day_of_month) % len(FOCUS_AREAS)`.
+- Placeholders stay generic here; fill them in only in the project copy.
+- Frontmatter `name` (`persona-audit`) differs from the folder name. The README installs with `cp -r examples/persona-audit-pattern ~/.claude/skills/persona-audit`; if that directory already exists (e.g. an existing `persona-audit` skill), `cp -r` nests the copy one level down, where Claude Code will not load it. Choose an unused target and match `name` to it.
+- The frontmatter has no `license: MIT`, unlike the repo convention (CI does not check it).
+- Focus selection with no argument: `focus_index = (day_of_month) % len(FOCUS_AREAS)` — a deterministic daily rotation, not randomisation.
 
 ### Testing Requirements
 
-- Validate SKILL.md with `/skill-compliance-checklist`.
-- After customising for a project, verify: `PROJECT_PATH` exists, the agent file is created from `agent-template.md`, and the dev server starts on `APP_URL`.
+- Run the local CI command from the root `AGENTS.md` and `/skill-compliance-checklist examples/persona-audit-pattern/SKILL.md`.
+- After customising a copy: `PROJECT_PATH` exists, the agent file was created from the template, and the dev server answers on `APP_URL`.
 
 ### Common Patterns
 
-- Audit reports are written to `docs/audit-runs/YYYY-MM-DD-audit.md` in the target project.
-- Agent phases run in sequence (discovery → verification → fix → report); within each phase, agents run in parallel.
-- The fix phase applies changes locally only — never push to remote.
-- Always verify compilation/type-checking passes after the fix phase.
+- Phases run in order (discovery ×3 → verification ×2 → fix ×≤3 → report), agents within a phase in parallel — up to 8 subagents, at most 3 at once. Expect long runs.
+- Report goes to `docs/audit-runs/YYYY-MM-DD-audit.md` in the target project.
+- Fixes stay local (never push), and compilation/type-checking must pass afterwards.
 
 ## Dependencies
 
 ### Internal
 
-- `references/agent-template.md` — required to create the project-specific agent before the skill can run
+- `references/agent-template.md` — the skill cannot run until the project agent exists
+
+### External
+
+- Claude Code with the `Agent` tool; a browser/preview MCP for app navigation (added during customisation)
 
 <!-- MANUAL: -->

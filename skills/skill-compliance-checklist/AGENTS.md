@@ -1,51 +1,49 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # skills/skill-compliance-checklist/
 
 ## Purpose
 
-The meta-skill that validates all other skills in this repository. Audits SKILL.md files against Anthropic's official guide (Jan 2026), checking frontmatter structure, description quality, progressive disclosure, error handling, examples, and word count. Run this before publishing any skill.
+Meta-skill that audits `SKILL.md` files against Anthropic's "Complete Guide to Building Skills for Claude" (Jan 2026): structure, frontmatter, description quality, progressive disclosure, error handling, examples, word count, and hard-coded IDs. Produces a 12-row PASS/FAIL table per skill and fix recommendations drawn from `references/`. The repo's manual pre-publish gate; `user-invocable: true` (`/skill-compliance-checklist`).
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `SKILL.md` | Skill definition — step-by-step audit instructions, compliance table template, troubleshooting, and examples |
-| `references/compliance-template.md` | YAML frontmatter template + body structure template + progressive disclosure and testing checklists |
-| `references/guide-patterns.md` | Five official skill patterns from Anthropic's guide (sequential workflow, multi-MCP coordination, iterative refinement, context-aware tool selection, domain-specific intelligence) |
+| `SKILL.md` | Five-step audit (identify → structural check → content check → report table → recommend fixes), troubleshooting for upload/trigger/instruction problems, three invocation examples. v1.1.0, ~580 words |
+| `references/compliance-template.md` | Frontmatter and body templates, progressive-disclosure levels, trigger/functional/performance test checklists |
+| `references/guide-patterns.md` | The guide's five skill patterns and three use-case categories |
 
 ## Subdirectories
 
 | Directory | Purpose |
 |-----------|---------|
-| `references/` | Supporting reference documents loaded on demand (see `references/AGENTS.md`) |
+| `references/` | Material loaded on demand when recommending fixes (see `references/AGENTS.md`) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- This skill is `user-invocable: true` — it can be triggered directly with `/skill-compliance-checklist`.
-- To audit a single skill: `/skill-compliance-checklist path/to/SKILL.md`.
-- To audit all skills: `/skill-compliance-checklist --all`.
-- The compliance table in SKILL.md is the canonical checklist — do not modify criteria without bumping `metadata.version`.
-- Current version: `1.1.0`. Bump to `1.2.0` on any functional change to audit criteria.
+- Step 1 scans only `~/.claude/skills/*/SKILL.md`, `~/.claude/scheduled-tasks/*/SKILL.md`, `.claude/agents/*.md`, and user-given paths. `--all` therefore never reaches this repo's `skills/` or `examples/` — pass explicit paths, e.g. `/skill-compliance-checklist skills/gmail-workflow/SKILL.md`.
+- The 12-row table in Step 4 is the canonical criteria list. Changing a criterion is a functional change: bump `metadata.version` (currently 1.1.0) and keep `references/compliance-template.md` consistent.
+- Its error-handling section is `## Troubleshooting`, which satisfies the CI heading check.
+- Several criteria go beyond CI (no "claude"/"anthropic" in the name, no hard-coded IDs, `## Important`/`## Critical` headers); CI enforces only the frontmatter, description, and word-count rows.
 
 ### Testing Requirements
 
-- Verify the skill correctly identifies known violations: description over 1024 chars, XML angle brackets in description, missing error handling section, word count over 5 000.
-- Self-audit: run this skill against its own SKILL.md to confirm it passes all criteria.
+- Self-audit: `/skill-compliance-checklist skills/skill-compliance-checklist/SKILL.md` should pass every row.
+- Negative check: a description > 1024 chars, `<`/`>` in the description, no error-handling section, or > 5,000 words must each FAIL.
+- Run the local CI command from the root `AGENTS.md`.
 
 ### Common Patterns
 
-- Audit output is a per-skill compliance table (PASS/FAIL per criterion) followed by specific fix recommendations.
-- Fix recommendations reference `references/compliance-template.md` and `references/guide-patterns.md` by name.
-- The five patterns in `guide-patterns.md` map to use case categories: document/asset creation, workflow automation, MCP enhancement.
+- Output: one compliance table per skill, then fixes citing `references/compliance-template.md` and `references/guide-patterns.md` by filename.
 
 ## Dependencies
 
 ### Internal
 
-- Used to validate: `figma-handoff`, `github-pr-review`, `gmail-workflow`, and `examples/persona-audit-pattern`
+- Audits `figma-handoff`, `github-pr-review`, `gmail-workflow`, and `examples/persona-audit-pattern`
 
 <!-- MANUAL: -->

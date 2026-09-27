@@ -1,64 +1,72 @@
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # claude-code-skills
 
 ## Purpose
 
-Public repository of reusable Claude Code skills, agents, and example templates. Every artefact here is Markdown-only — no build step, no runtime dependencies. Skills are structured `SKILL.md` files that Claude Code loads automatically based on trigger phrases; agents are YAML-fronted `.md` definitions for spawning specialised subprocesses; examples are adaptation templates with `SKILL.md` + `references/` scaffolding.
+Public (MIT) repository of reusable Claude Code skills, agents, and example templates. Published content is Markdown only: skills are `SKILL.md` files Claude Code loads by trigger phrase, agents are YAML-fronted `.md` subagent definitions, and examples are copy-and-customise templates. There is no build step and no package manifest. The only executable code is the CI validator (inline Bash in `.github/workflows/validate-skills.yml`) and `scripts/attention-check.sh`, a health scanner consumed by the `~/projects` Attention Hub.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `CLAUDE.md` | Project conventions, skill format rules, CI/CD contract, gotchas, and success criteria |
-| `README.md` | Public-facing documentation — skills table, agents table, installation instructions, MCP requirements |
+| `CLAUDE.md` | Canonical conventions — skill/agent frontmatter format, success criteria, gotchas. Read before editing any skill or agent |
+| `README.md` | Public docs — skills/agents/examples tables, install commands, MCP requirements, CI summary |
 | `LICENSE` | MIT licence |
-| `.claudeignore` | Paths excluded from Claude Code context loading |
+| `.gitignore` | Ignores `.omc/`, `.claude/`, `.DS_Store`, and secret-bearing patterns (`.env*`, `*.pem`, `*.key`, `credentials.json`, …) |
+| `.claudeignore` | Claude Code context exclusions (generic Node/build/log/env patterns; header comment mislabels the repo as TypeScript/Node) |
 
 ## Subdirectories
 
 | Directory | Purpose |
 |-----------|---------|
-| `skills/` | SKILL.md files in kebab-case subdirectories, one per skill (see `skills/AGENTS.md`) |
-| `agents/` | Reusable agent definition files (.md), spawnable subprocesses (see `agents/AGENTS.md`) |
-| `examples/` | Adaptation templates — copy and customise for a project (see `examples/AGENTS.md`) |
-| `scripts/` | CI helper and attention-check scripts (see `scripts/AGENTS.md`) |
-| `.claude/` | Local Claude Code configuration (skills symlinks / local overrides) |
-| `.omc/` | oh-my-claudecode orchestration state (do not modify manually) |
+| `skills/` | Published skills, one kebab-case directory each (see `skills/AGENTS.md`) |
+| `agents/` | Subagent definition files (see `agents/AGENTS.md`) |
+| `examples/` | Adaptation templates with placeholders (see `examples/AGENTS.md`) |
+| `scripts/` | `attention-check.sh` — Attention Hub scanner, not used by CI (see `scripts/AGENTS.md`) |
+| `.github/` | GitHub Actions CI (see `.github/AGENTS.md`) |
+| `.claude/` | Optional gitignored local configuration; contents vary by checkout. |
+| `.omc/` | Gitignored oh-my-claudecode session state. Generated — do not edit or document |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- All content is Markdown-only. Never add package.json, Makefile, compiled artefacts, or runtime files.
-- Use conventional commits: `feat:`, `fix:`, `docs:`, `chore:`.
-- Australian English spelling throughout (colour, behaviour, organise, licence as noun).
-- Run `/skill-compliance-checklist` on any modified SKILL.md before committing.
-- Never write to `~/projects/raw/` — that layer is human-curated and protected by a PreToolUse hook.
+- Keep published content Markdown-only — no `package.json`, Makefile, or build output.
+- Follow `CLAUDE.md` for frontmatter and section rules; bump `metadata.version` on every functional skill change.
+- Conventional commits (`feat:`, `fix:`, `docs:`, `chore:`); Australian English (colour, behaviour, organise, licence as noun).
+- `/skill-compliance-checklist` only audits what it is pointed at: its `--all` scan covers `~/.claude/skills/`, `~/.claude/scheduled-tasks/`, and `.claude/agents/` — not this repo's `skills/`. Pass explicit paths (e.g. `skills/gmail-workflow/SKILL.md`).
+- Keep the README tables in sync when adding, renaming, or removing a skill, agent, or example.
+- `scripts/attention-check.sh` is invoked by path from outside this repo — do not move or rename it.
+- Never write to `~/projects/raw/` (human-curated wiki layer, protected by a PreToolUse hook).
 
 ### Testing Requirements
 
-- No local test runner. CI validates via `.github/workflows/validate-skills.yml` on push/PR.
-- Local check: invoke the `skill-compliance-checklist` skill against the target file.
-- Key CI checks: YAML frontmatter presence, kebab-case names, description ≤ 1024 chars, no XML angle brackets, word count ≤ 5 000 words, error handling section present.
+- No local test runner. CI (`.github/workflows/validate-skills.yml`) runs on push/PR touching `skills/`, `agents/`, `examples/`, or `.github/workflows/`.
+- Run the identical checks locally from the repo root:
+  `awk '/^        run: \|/{f=1;next} f' .github/workflows/validate-skills.yml | sed 's/^          //' | bash`
+- Hard failures: no `---` on line 1, missing or non-kebab `name:`, missing `description:`, description > 1024 chars or containing `<`/`>`, file > 5,000 words (whole file incl. frontmatter). Missing `## Error…`/`## Troubleshoot…` and `## Example…` headings only warn.
+- Agents are checked only for the `---` delimiter and a non-empty `name:`; `references/` files are never validated.
+- `scripts/`: `bash scripts/attention-check.sh 2>/dev/null | python3 -m json.tool`.
 
 ### Common Patterns
 
-- Every skill lives at `skills/{kebab-case-name}/SKILL.md`.
-- Large reference content goes in `skills/{name}/references/` (progressive disclosure), not inline in SKILL.md.
-- Agent files use YAML frontmatter with `name`, `model` (Sonnet default), and `tools` list.
-- Example directories mirror the skill structure: `examples/{name}/SKILL.md` + `references/`.
+- Skill: `skills/{kebab-name}/SKILL.md`, optional `references/` for long material (progressive disclosure).
+- Agent: `agents/{kebab-name}.md` with `name`, `description`, `license`, `model: sonnet`, `tools`.
+- Example: `examples/{name}/SKILL.md` + `references/` customisation guide; placeholders stay generic.
+- Keep `description:` on one line — CI reads only that line, so `description: >` fails and `description: |` escapes the length check.
 
 ## Dependencies
 
 ### Internal
 
-- `skills/skill-compliance-checklist/` — used to validate all other skills before publishing
+- `skills/skill-compliance-checklist/` — manual pre-publish validator for every other skill and example
 
 ### External
 
-- `gh` CLI — required by `github-pr-review` skill and CI workflows
-- Gmail MCP server — required by `gmail-workflow` skill
-- Figma MCP server — required by `figma-handoff` skill
+- GitHub Actions (`ubuntu-latest`, `actions/checkout@v4`) — CI
+- `gh` CLI — `github-pr-review` skill only (CI does not use it)
+- Figma MCP server (`figma-handoff`), Gmail MCP server (`gmail-workflow`)
+- `~/projects/scripts/attention-collect.sh` (Attention Hub) — consumes `scripts/attention-check.sh`
 
 <!-- MANUAL: -->

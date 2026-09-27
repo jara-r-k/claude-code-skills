@@ -1,37 +1,38 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # examples/persona-audit-pattern/references/
 
 ## Purpose
 
-Supporting template for the persona-audit-pattern example. Contains the full agent definition (YAML frontmatter + methodology body) that must be copied into a project's `.claude/agents/` directory and customised before the persona-audit skill can run.
+Template for the project-specific agent the persona-audit skill hands off to. It must be copied into a project's `.claude/agents/` directory and customised before the skill can run.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `agent-template.md` | Complete agent definition template — YAML block (`name`, `model: sonnet`, `tools` list including `Agent`), four-phase audit workflow (discovery × 3 agents, verification × 2, fix × 3, report), focus area table, and a six-step customisation guide |
+| `agent-template.md` | Agent frontmatter template (`name: your-project-persona-audit`, `model: sonnet`, tools Read/Write/Edit/Bash/Glob/Grep/Agent/WebSearch), agent body template (personas, four phases, focus-area table, rules), and a six-step customisation guide |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- This file is a template, not a live agent — do not treat it as an executable definition.
-- When adapting for a project: replace `[Your Project]` throughout, update the tools list to include any project-specific MCP tools (e.g., Preview MCP), customise focus areas to match the app's key user flows, and update the compilation check command to match the project's build system.
-- The agent requires the `Agent` tool in its tools list to spawn the discovery/verification/fix subagents — do not remove it.
+- Template, not a live agent. Frontmatter and body sit in separate fenced blocks (the body uses a four-backtick fence); join them without the fences to make the real `.claude/agents/*.md` file.
+- The shipped tools list has no browser or preview tool, so discovery agents cannot actually "navigate the app" until one is added (customisation step 2).
+- Keep `Agent` in the tools list — it spawns the phase subagents.
+- Keep `model: sonnet`; do not downgrade to haiku.
+- Replace `[Your Project]` throughout and set the step-5 compilation check to the project's build (e.g. `npx tsc --noEmit`, `cargo check`, `go build ./...`).
 
 ### Testing Requirements
 
-- After copying and customising, verify the agent file is valid YAML frontmatter and that the project's dev server starts on the configured `APP_URL`.
-- Confirm the agent can spawn subagents by running a minimal audit (single persona, single focus area) before a full run.
+- After customising: valid frontmatter, and the dev server starts on `APP_URL`.
+- Do a minimal run (one persona, one focus area) before a full audit.
 
 ### Common Patterns
 
-- Model for the spawned agent: `sonnet` (do not downgrade to haiku — standing rule).
-- Discovery phase: 3 parallel agents, each with a different persona.
-- Verification phase: 2 parallel agents confirming or rejecting each discovery finding.
-- Fix phase: up to 3 parallel agents, one per confirmed issue.
-- All changes made locally only — never push to remote from within the audit agent.
+- Personas: the template generates 3–5 (name, demographics, context, constraints, goal) but spawns only 3 discovery agents, one persona each — personas 4–5 go unused unless agents are added.
+- Phase 1: 3 parallel discovery agents grading issues Critical/High/Medium/Low. Phase 2: 2 verification agents marking each CONFIRMED or FALSE POSITIVE. Phase 3: up to 3 fix agents working through confirmed issues. Phase 4: report.
+- Default focus areas: `mobile` (375px), `accessibility`, `onboarding`, `edge-case`, `performance`.
+- Changes stay local — never push from inside the audit.
 
 <!-- MANUAL: -->

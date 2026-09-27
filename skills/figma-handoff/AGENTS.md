@@ -1,43 +1,43 @@
 <!-- Parent: ../AGENTS.md -->
-<!-- Generated: 2026-06-30 | Updated: 2026-06-30 -->
+<!-- Generated: 2026-06-30 | Updated: 2026-09-27 -->
 
 # skills/figma-handoff/
 
 ## Purpose
 
-Design-to-code handoff skill powered by the Figma MCP server. Implements a five-step workflow: extract design context via Figma MCP tools, analyse the project stack and existing components, map Figma design tokens to project tokens, generate production code adapted to the project's conventions, and verify output visually against the Figma screenshot.
+Companion skill for the Figma MCP server that turns a Figma frame or component into production code in the project's own stack. Five steps: extract design context (screenshot, design context, variables, Code Connect map) → analyse the project stack and components → map Figma tokens to project tokens → generate code reusing existing components → compare visually against the screenshot.
 
 ## Key Files
 
 | File | Description |
 |------|-------------|
-| `SKILL.md` | Full skill definition — MCP tool catalogue, five-step handoff workflow, error handling table, three worked examples, and critical rules |
+| `SKILL.md` | Nine-tool Figma MCP catalogue, five-step workflow, error table (invalid URL, MCP disconnected, no Code Connect mappings, thin design context, unknown stack), three examples, `## Important` rules. v1.0.0, `mcp-server: figma`, ~1,100 words (largest skill in the repo) |
 
 ## For AI Agents
 
 ### Working In This Directory
 
-- This skill requires the Figma MCP server to be connected (`mcp-server: figma` in frontmatter).
-- Current version: `1.0.0`. Bump on any change to the handoff workflow or MCP tool list.
-- The skill must never default to React + Tailwind — it detects and adapts to the project's actual stack.
-- Code Connect mappings (`add_code_connect_map`) should be registered after every successful handoff to improve future runs.
+- Tool names (`get_design_context`, `get_screenshot`, `get_metadata`, `get_variable_defs`, `get_code_connect_map`, `get_code_connect_suggestions`, `add_code_connect_map`, `send_code_connect_mappings`, `get_figjam`) follow Figma's official MCP server. Other Figma MCPs (e.g. Framelink: `get_figma_data`, `download_figma_images`) expose different tools and are not covered.
+- Never default to React + Tailwind — detect and match the project's framework, styling approach, and token system.
+- After a successful handoff, offer to register Code Connect mappings via `add_code_connect_map` (Example 3 registers one directly).
+- Bump `metadata.version` on any change to the workflow or tool list.
 
 ### Testing Requirements
 
-- Validate SKILL.md with `/skill-compliance-checklist` before any change is committed.
-- Manual test: provide a Figma URL and verify the skill correctly parses the file key and node ID, extracts design context, and generates code that matches the project's styling approach.
+- Run the local CI command from the root `AGENTS.md` and `/skill-compliance-checklist skills/figma-handoff/SKILL.md`.
+- Manual: give a real Figma URL; check the file key and node ID are parsed, the screenshot is taken first, and generated code uses the project's styling and tokens rather than raw hex/px values.
 
 ### Common Patterns
 
-- Figma URL format: `figma.com/design/<file_key>/<name>?node-id=<node_id>` — parse both parts before calling any MCP tool.
-- Always call `get_screenshot` first to capture a visual reference before extracting structured data.
-- Prefer `get_code_connect_map` early to discover existing mappings and avoid recreating components.
-- Accessibility attributes (ARIA, semantic HTML, keyboard nav) are required in every generated component.
+- URL form: `figma.com/design/<file_key>/<name>?node-id=<node_id>`. Browser URLs usually encode the node as `42-100`, while the skill's example and the API use `42:100` — normalise when parsing.
+- Order: `get_screenshot` first for a visual reference, then structured extraction, then `get_code_connect_map` to find reusable mappings.
+- Every generated component needs semantic HTML, ARIA attributes, and keyboard support.
 
 ## Dependencies
 
 ### External
 
-- Figma MCP server (first-party Claude.ai integration)
+- Figma MCP server (official Figma integration) with a valid auth token
+- Optional Preview MCP for live visual comparison (Step 5)
 
 <!-- MANUAL: -->
