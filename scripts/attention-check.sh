@@ -77,7 +77,6 @@ detect_stale_skills() {
 
   local now
   now=$(date +%s)
-  local threshold=$((30 * 86400))  # 30 days in seconds
 
   for skill_dir in "$skills_dir"/*/; do
     [[ -d "$skill_dir" ]] || continue
@@ -172,7 +171,6 @@ detect_stale_branches() {
 
   local now
   now=$(date +%s)
-  local threshold=$((30 * 86400))
 
   # List local branches not yet merged into main
   while IFS= read -r branch; do
@@ -210,13 +208,4 @@ for detector in detect_no_evals detect_stale_skills detect_uncommitted detect_mi
 done
 
 # ─── Output JSON array ───────────────────────────────────────────────
-if (( ${#ITEMS[@]} == 0 )); then
-  echo "[]"
-else
-  echo -n "["
-  for i in "${!ITEMS[@]}"; do
-    if (( i > 0 )); then echo -n ","; fi
-    echo -n "${ITEMS[$i]}"
-  done
-  echo "]"
-fi
+(IFS=,; echo "[${ITEMS[*]-}]")
