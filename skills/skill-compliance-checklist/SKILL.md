@@ -73,7 +73,7 @@ For each skill, produce a compliance table:
 
 For any FAIL items, provide specific guidance referencing `references/compliance-template.md` and `references/guide-patterns.md`.
 
-## Troubleshooting
+## Error Handling
 
 ### Skill won't upload
 - **Error**: "Could not find SKILL.md" — rename file to exactly `SKILL.md`

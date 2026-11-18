@@ -27,7 +27,7 @@ Meta-skill that audits `SKILL.md` files against Anthropic's "Complete Guide to B
 
 - Step 1 scans only `~/.claude/skills/*/SKILL.md`, `~/.claude/scheduled-tasks/*/SKILL.md`, `.claude/agents/*.md`, and user-given paths. `--all` therefore never reaches this repo's `skills/` or `examples/` — pass explicit paths, e.g. `/skill-compliance-checklist skills/gmail-workflow/SKILL.md`.
 - The 12-row table in Step 4 is the canonical criteria list. Changing a criterion is a functional change: bump `metadata.version` (currently 1.1.0) and keep `references/compliance-template.md` consistent.
-- Its error-handling section is `## Troubleshooting`, which satisfies the CI heading check.
+- Its error-handling section is `## Error Handling`, which satisfies the CI heading check and the in-house compliance lint's literal `^## Error Handling` grep (renamed from `## Troubleshooting` on 2026-05-10).
 - Several criteria go beyond CI (no "claude"/"anthropic" in the name, no hard-coded IDs, `## Important`/`## Critical` headers); CI enforces only the frontmatter, description, and word-count rows.
 
 ### Testing Requirements
