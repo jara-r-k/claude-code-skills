@@ -175,7 +175,7 @@ detect_stale_branches() {
   # List local branches not yet merged into main
   while IFS= read -r branch; do
     [[ -z "$branch" ]] && continue
-    branch="$(echo "$branch" | sed 's/^[* ]*//')"
+    branch="$(echo "$branch" | sed 's/^[*+ ]*//')"
     [[ "$branch" == "$main_branch" ]] && continue
 
     local last_commit_epoch
